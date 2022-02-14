@@ -55,20 +55,24 @@ if(isset($_GET['username']) && !isset($_SESSION['username'])) {
             $arr = explode("\n", $contents);
 
             foreach ($arr as $key=>$str) {
-                if(!$key == 0 && $key != (count($arr) -1)) {
+                if(!$key == 0) {
                     // further explode the string on hyphen
                     $data = explode("-", $str);
-                    var_dump($data);
+
                     // key starts at 0 so add 1
                     $tempId = $key;
-                    $user = $data[0];
-                    $pass = $data[1];
-                    // data[0] is username and data[1] is password
-                    $insertQ = "INSERT INTO members(id, username, password)
-                    VALUES
-                    ($tempId, 'Chicken', 'Wing')";
-                    // sql statement for insert
-                    mysqli_query($mysqli, $insertQ) or die(mysqli_error($mysqli));
+                    if(count($data) == 2) {
+                        $user = $data[0];
+                        $pass = $data[1];
+                        var_dump($user, $pass);
+                        // data[0] is username and data[1] is password
+                        $insertQ = "INSERT INTO members(id, username, password)
+                        VALUES
+                        ($tempId, $user, $pass)";
+                        // sql statement for insert
+                        mysqli_query($mysqli, $insertQ) or die(mysqli_error($mysqli));
+                    }
+
                 }
 
             }
