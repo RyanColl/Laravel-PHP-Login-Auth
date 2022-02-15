@@ -110,15 +110,15 @@ if(isset($_GET['username']) && !isset($_SESSION['username'])) {
     authenticate($mysqli);
     if(!isset($_SESSION['username'])) {
         // if session was not assigned
-        die('The Username or Password did not match <br><br><button class="btn btn-warning"><a href="login.php">Return</a></button>');
+        die('The Username or Password did not match <br><br><a href="login.php"><button class="btn btn-warning">Return</button></a>');
     }
 }
 if(!isset($_GET['username']) && isset($_SESSION['username'])) {
     setcookie('username', $_SESSION['username'], time() + 180);
     echo "<div class='alert alert-success'>hello you are logged in as " . $_SESSION['username'] . "<br></div>";
-    echo "Review books: "." <button class='btn btn-info'><a href='review.php'>Review</a></button><br>";
-    echo "View All:"."<button class='btn btn-success'><a href='all.php' class='text-white'>See All</a></button><br>";
-    echo "<button class='btn btn-warning'><a href='logout.php'>logout</a></button>";
+    echo "Review books: "." <a href='review.php'><button class='btn btn-info'>Review</button></a><br>";
+    echo "View All:"."<a href='all.php' class='text-white'><button class='btn btn-success'>See All</button></a><br>";
+    echo "<a href='logout.php'><button class='btn btn-warning'>logout</button></a>";
 }
 
 ob_end_flush();

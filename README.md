@@ -1,3 +1,35 @@
+# Ryan Collicutt Presents...
+
+Another laravel app that uses cookies and sessions, alongside database integrations, to allow users to login to the app with a few key username and password combos, found in members.txt. The app allows a user to leave a review on a book, and then view the table of reviews pulled from the database. If the user spends more than 3 minutes in the site, they will be logged out for security reasons.
+
+
+
+## Bootstrap and JQuery
+
+I use both boostrap and jquery in my php apps, they seem to compliment it well. At the top of each of my pages, I make calls to the bootsrap api and jquery api. I also start the session:
+```php
+echo '<head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+      </head>';
+ob_start();
+session_start();
+echo '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
+```
+## login.php
+
+Using issets and sessions, like in one of our previous [labs](https://github.com/RyanColl/Laravel-React-Cookies-Session), we are going to seed the database with data from members.txt, and then verify the user matches the username and password found in the database.
+
+We use Mysql to create all of our connections. Here we require 
+```php
+require_once('constants.php');
+$mysqli = new mysqli(DBHOST, DBUSER, DBPASSWORD, DATABASE)
+or die(mysqli_connect_error());
+```
+
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">
