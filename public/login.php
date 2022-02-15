@@ -31,6 +31,17 @@ if(isset($_GET['username']) && !isset($_SESSION['username'])) {
     echo "<h4>Welcome <b>".$_GET['username']."</b></h4>";
     echo "<h3>Authenticating...</h3>";
     function authenticate($mysqli) {
+        function authorize() {
+            $_SESSION['username'] = $_GET['username'];
+            $_SESSION['password'] = $_GET['password'];
+            setcookie('username', $_GET['username'], time() + 180);
+            $_SESSION['logintime'] = time();
+            echo "<h3>Username and Pass confirmed, welcome ".$_GET['username']."!</h3>";
+            echo "<h3>You are being redirected...</h3>";
+            echo "<script>setTimeout(() => {
+                window.location.replace('login.php')
+            }, 3000)</script>";
+        }
         // create statement
         $createQ = "CREATE TABLE IF NOT EXISTS members(
             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -45,9 +56,8 @@ if(isset($_GET['username']) && !isset($_SESSION['username'])) {
 
         // get array result
         $row = mysqli_fetch_assoc($result);
-
         // if table is empty
-        if(!isset($row)) {
+        if($row == null) {
             // read members.txt
             $contents = file_get_contents("./members.txt");
 
@@ -55,6 +65,7 @@ if(isset($_GET['username']) && !isset($_SESSION['username'])) {
             $arr = explode("\n", $contents);
 
             foreach ($arr as $key=>$str) {
+                // first row is the headers
                 if(!$key == 0) {
                     // further explode the string on hyphen
                     $data = explode("-", $str);
@@ -64,59 +75,49 @@ if(isset($_GET['username']) && !isset($_SESSION['username'])) {
                     if(count($data) == 2) {
                         $user = $data[0];
                         $pass = $data[1];
-                        var_dump($user, $pass);
                         // data[0] is username and data[1] is password
                         $insertQ = "INSERT INTO members(id, username, password)
                         VALUES
-                        ($tempId, $user, $pass)";
+                        ('$tempId', '$user', '$pass')";
                         // sql statement for insert
                         mysqli_query($mysqli, $insertQ) or die(mysqli_error($mysqli));
                     }
-
                 }
 
             }
+        } else {
+            // create a new query for members table
+            $result = mysqli_query($mysqli, $q4) or die(mysqli_error($mysqli));
+            while($row = mysqli_fetch_assoc($result))
+            {
+                // if username and password match
+                if($_GET['username'] == $row['username'] && $_GET['password'] == $row['password']) {
+                    authorize();
+                }
+            }
+            return;
         }
-//        if(isset($row)) {
-//            while($row)
-//            {
-//                foreach($row as $key=>$value)
-//                {
-//                    echo "$key is $value<br>";
-//                }
-//                echo "<hr>";
-//            }
-//            die();
-//        }
-//        else {
-//            // select statement
-//            $q4 = "SELECT * FROM members";
-//            $result = mysqli_query($mysqli, $q4) or die(mysqli_error($mysqli));
-//            $newRow = mysqli_fetch_assoc($result);
-//            while($newRow)
-//            {
-//                foreach($row as $key=>$value)
-//                {
-//                    echo "$key is $value<br>";
-//                }
-//                echo "<hr>";
-//            }
-//        }
-
+            // if the table needed to be seeded, we still need to verify the user
+        $result = mysqli_query($mysqli, $q4) or die(mysqli_error($mysqli));
+        while($row = mysqli_fetch_assoc($result))
+        {
+            // if username and password match
+            if($_GET['username'] == $row['username'] && $_GET['password'] == $row['password']) {
+                authorize();
+            }
+        }
     }
     authenticate($mysqli);
-    $_SESSION['username'] = $_GET['username'];
-    $_SESSION['password'] = $_GET['password'];
-    setcookie('username', $_GET['username'], time() + 180);
-    $_SESSION['logintime'] = time();
-    echo "<script>setTimeout(() => {
-            window.location.replace('login.php')
-        }, 30000)</script>";
+    if(!isset($_SESSION['username'])) {
+        // if session was not assigned
+        die('The Username or Password did not match <br><br><button class="btn btn-warning"><a href="login.php">Return</a></button>');
+    }
 }
 if(!isset($_GET['username']) && isset($_SESSION['username'])) {
     setcookie('username', $_SESSION['username'], time() + 180);
-    echo "hello you are logged in as " . $_SESSION['username'] . "<br>";
-    echo "Investigate books: "." <button class='btn btn-info'><a href='books.php'>Books</a></button><br>";
+    echo "<div class='alert alert-success'>hello you are logged in as " . $_SESSION['username'] . "<br></div>";
+    echo "Review books: "." <button class='btn btn-info'><a href='review.php'>Review</a></button><br>";
+    echo "View All:"."<button class='btn btn-success'><a href='all.php' class='text-white'>See All</a></button><br>";
     echo "<button class='btn btn-warning'><a href='logout.php'>logout</a></button>";
 }
 
